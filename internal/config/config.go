@@ -1,0 +1,60 @@
+package config
+
+import (
+	"os"
+
+	"gopkg.in/yaml.v3"
+)
+
+type Activity struct {
+	Id       int
+	Duration int64
+}
+
+type Settings struct {
+	APIToken    string     `yaml:"api_token"`
+	TrackingUrl string     `yaml:"tracking_url"`
+	CustomerId  string     `yaml:"project_id"`
+	Activities  []Activity `yaml:""activities`
+}
+
+func NewSettings(configPath string) *Settings {
+
+	s := Settings{}
+
+	s.ReadConfigFile(configPath)
+
+	s.OverrideFromEnv()
+	return &s
+}
+
+func (s *Settings) ReadConfigFile(configPath string) {
+	data, err := os.ReadFile(configPath)
+
+	if err != nil {
+		return
+	}
+
+	err = yaml.Unmarshal(data, s)
+
+	if err != nil {
+		return
+	}
+
+}
+
+func (s *Settings) OverrideFromEnv() {
+
+	API_TOKEN := os.Getenv("TRACK_API_TOKEN")
+
+	if API_TOKEN != "" {
+		s.APIToken = API_TOKEN
+	}
+
+	TRACK_URL := os.Getenv("TRACK_URL")
+
+	if TRACK_URL != "" {
+		s.TrackingUrl = TRACK_URL
+	}
+
+}
