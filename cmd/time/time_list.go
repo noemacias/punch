@@ -59,7 +59,7 @@ func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 		activitiesMap[a.ID] = a.Name
 	}
 
-	fmt.Printf("%-10v %-8v %-8v %-8v %-8v %v\n", "Date", "Begin", "End", "Duration", "Customer", "Project")
+	fmt.Printf("%-10v %-8v %-8v %-8v %-8v %v\n", "Date", "Begin", "End", "Duration", "Project", "Activity")
 	for _, t := range timesheets {
 
 		date := t.ParseTimeStamp(t.Begin).Format(time.DateOnly)

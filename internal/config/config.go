@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
@@ -29,6 +30,17 @@ func NewSettings(configPath string) *Settings {
 }
 
 func (s *Settings) ReadConfigFile(configPath string) {
+
+	if configPath == "~/.config/punch.yaml" {
+		home, err := os.UserHomeDir()
+
+		if err != nil {
+			return
+		}
+
+		configPath = filepath.Join(home, ".config", "punch.yaml")
+	}
+
 	data, err := os.ReadFile(configPath)
 
 	if err != nil {

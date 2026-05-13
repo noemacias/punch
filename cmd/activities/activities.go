@@ -2,7 +2,7 @@ package activities
 
 import "github.com/spf13/cobra"
 
-func NewActiviGroup() *cobra.Command {
+func NewActivityGroup() *cobra.Command {
 
 	cmd := cobra.Command{
 		Use: `activities`,

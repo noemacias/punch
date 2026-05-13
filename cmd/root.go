@@ -14,8 +14,8 @@ func Execute() {
 		},
 	}
 
-	cmd.PersistentFlags().String("config", "config.yaml", "Configration file")
-	cmd.AddCommand(activities.NewActiviGroup())
+	cmd.PersistentFlags().String("config", "~/.config/punch.yaml", "Configration file")
+	cmd.AddCommand(activities.NewActivityGroup())
 	cmd.AddCommand(time.NewTimeGroup())
 	cmd.Execute()
 }
