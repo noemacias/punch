@@ -66,7 +66,7 @@ func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 	grandTotal := map[int]map[int]int{}
 	projectsTotal := map[int]int{}
 
-	fmt.Printf("%-10v %-8v %-8v %-8v %-8v %v\n", "Date", "Begin", "End", "Duration", "Project", "Activity")
+	fmt.Printf("%-8v %-10v %-8v %-8v %-8v %-8v %v\n", "UserId", "Date", "Begin", "End", "Duration", "Project", "Activity")
 	for _, t := range timesheets {
 
 		date := t.ParseTimeStamp(t.Begin).Format(time.DateOnly)
@@ -75,7 +75,7 @@ func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 
 		activity, _ := activitiesMap[t.Activity]
 
-		fmt.Printf("%-10v %-8v %-8v %-8v %-8v %v\n", date, begin.Format(time.TimeOnly), end.Format(time.TimeOnly), end.Sub(begin), t.Project, fmt.Sprintf("%-4v %v", t.Activity, activity))
+		fmt.Printf("%-8v %-10v %-8v %-8v %-8v %-8v %v\n", t.User, date, begin.Format(time.TimeOnly), end.Format(time.TimeOnly), end.Sub(begin), t.Project, fmt.Sprintf("%-4v %v", t.Activity, activity))
 
 		if grandTotal[t.Project] == nil {
 			grandTotal[t.Project] = map[int]int{}
