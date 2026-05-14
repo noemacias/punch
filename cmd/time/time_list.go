@@ -23,6 +23,7 @@ func NewTimeListCommand() *cobra.Command {
 		},
 	}
 
+	cmd.Flags().StringP("user", "u", "", "User")
 	cmd.Flags().StringP("size", "s", "100", "The amount of entries for each page")
 	cmd.Flags().String("begin", "", "Only records after this date will be included (format: HTML5 datetime-local, e.g. YYYY-MM-DDThh:mm:ss)")
 	cmd.Flags().String("end", "", "Only records before this date will be included (format: HTML5 datetime-local, e.g. YYYY-MM-DDThh:mm:ss)")
@@ -31,6 +32,7 @@ func NewTimeListCommand() *cobra.Command {
 
 func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 
+	user, _ := cmd.Flags().GetString("user")
 	configFile, _ := cmd.Flags().GetString("config")
 	pageSize, _ := cmd.Flags().GetString("size")
 	begin, _ := cmd.Flags().GetString("begin")
@@ -39,7 +41,7 @@ func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 	settings := config.NewSettings(configFile)
 
 	timesheet := track.NewTimeSheet(settings)
-	timesheets, err := timesheet.List(begin, end, pageSize)
+	timesheets, err := timesheet.List(begin, end, pageSize, user)
 
 	if err != nil {
 		slog.Error("Failed to list timesheets", "error", err.Error())
@@ -48,7 +50,7 @@ func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 
 	activity := track.NewActitivies(settings)
 
-	activities, err := activity.List("")
+	activities, err := activity.List("", "")
 	activitiesMap := map[int]string{}
 
 	if err != nil {
@@ -68,6 +70,6 @@ func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 
 		activity, _ := activitiesMap[t.Activity]
 
-		fmt.Printf("%-10v %-8v %-8v %-8v %-8v %v\n", date, begin.Format(time.TimeOnly), end.Format(time.TimeOnly), end.Sub(begin), t.Project, fmt.Sprintf("%v - %v", t.Activity, activity))
+		fmt.Printf("%-10v %-8v %-8v %-8v %-8v %v\n", date, begin.Format(time.TimeOnly), end.Format(time.TimeOnly), end.Sub(begin), t.Project, fmt.Sprintf("%-4v %v", t.Activity, activity))
 	}
 }

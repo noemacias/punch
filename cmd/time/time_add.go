@@ -78,7 +78,7 @@ func (o *TimeAddCommand) Run(cmd *cobra.Command, args []string) {
 
 	activity := track.NewActitivies(settings)
 
-	activities, err := activity.List("")
+	activities, err := activity.List("", "")
 	activitiesMap := map[int]string{}
 
 	if err != nil {

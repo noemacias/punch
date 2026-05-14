@@ -55,10 +55,10 @@ func buildUrl(baseUrl, path string, params map[string]string) (*url.URL, error) 
 	return url, nil
 }
 
-func (a *Activities) List(limit string) ([]Activity, error) {
+func (a *Activities) List(limit, project string) ([]Activity, error) {
 
 	params := map[string]string{
-		"project": a.Settings.CustomerId,
+		"project": project,
 		"term":    limit,
 	}
 
