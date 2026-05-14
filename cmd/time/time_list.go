@@ -64,6 +64,7 @@ func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 
 	// Total
 	grandTotal := map[int]map[int]int{}
+	projectsTotal := map[int]int{}
 
 	fmt.Printf("%-10v %-8v %-8v %-8v %-8v %v\n", "Date", "Begin", "End", "Duration", "Project", "Activity")
 	for _, t := range timesheets {
@@ -80,11 +81,12 @@ func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 			grandTotal[t.Project] = map[int]int{}
 		}
 		grandTotal[t.Project][t.Activity] += t.Duration
+
+		projectsTotal[t.Project] += t.Duration
 	}
 
 	fmt.Println()
-	fmt.Println("Time Summary")
-
+	fmt.Println("Time spent on each project and activity")
 	fmt.Printf("%-8v %-10v %v\n", "Project", "Duration", "Activity")
 	for p, a := range grandTotal {
 		for act, dur := range a {
@@ -92,5 +94,12 @@ func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 			fmt.Printf("%-8v %-10v %v\n", p, time.Duration(dur)*time.Second, fmt.Sprintf("%-4v %v", act, activity))
 		}
 
+	}
+
+	fmt.Println()
+	fmt.Println("Total time spent on each project")
+	fmt.Printf("%-8v %-10v\n", "Project", "Duration")
+	for p, dur := range projectsTotal {
+		fmt.Printf("%-8v %-10v\n", p, time.Duration(dur)*time.Second)
 	}
 }
