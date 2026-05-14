@@ -78,13 +78,14 @@ func NewTimeSheet(settings *config.Settings) *TimeSheet {
 	}
 }
 
-func (t *TimeSheet) List(begin, end string, pageSize string, user string) (TimeSheetlist, error) {
+func (t *TimeSheet) List(begin, end string, pageSize string, user string, activity string) (TimeSheetlist, error) {
 	params := map[string]string{
 		// "project": a.Settings.CustomerId,
-		"begin": begin,
-		"end":   end,
-		"size":  pageSize,
-		"user":  user,
+		"begin":    begin,
+		"end":      end,
+		"size":     pageSize,
+		"user":     user,
+		"activity": activity,
 	}
 
 	url, err := buildUrl(t.Settings.TrackingUrl, "/api/timesheets", params)

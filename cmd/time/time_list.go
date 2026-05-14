@@ -25,6 +25,7 @@ func NewTimeListCommand() *cobra.Command {
 
 	cmd.Flags().StringP("user", "u", "", "User")
 	cmd.Flags().StringP("size", "s", "100", "The amount of entries for each page")
+	cmd.Flags().StringP("activity", "a", "", "Activity ID to filter timesheets")
 	cmd.Flags().String("begin", "", "Only records after this date will be included (format: HTML5 datetime-local, e.g. YYYY-MM-DDThh:mm:ss)")
 	cmd.Flags().String("end", "", "Only records before this date will be included (format: HTML5 datetime-local, e.g. YYYY-MM-DDThh:mm:ss)")
 	return &cmd
@@ -33,6 +34,7 @@ func NewTimeListCommand() *cobra.Command {
 func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 
 	user, _ := cmd.Flags().GetString("user")
+	limit, _ := cmd.Flags().GetString("activity")
 	configFile, _ := cmd.Flags().GetString("config")
 	pageSize, _ := cmd.Flags().GetString("size")
 	begin, _ := cmd.Flags().GetString("begin")
@@ -41,7 +43,7 @@ func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 	settings := config.NewSettings(configFile)
 
 	timesheet := track.NewTimeSheet(settings)
-	timesheets, err := timesheet.List(begin, end, pageSize, user)
+	timesheets, err := timesheet.List(begin, end, pageSize, user, limit)
 
 	if err != nil {
 		slog.Error("Failed to list timesheets", "error", err.Error())
@@ -49,7 +51,6 @@ func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 	}
 
 	activity := track.NewActitivies(settings)
-
 	activities, err := activity.List("", "")
 	activitiesMap := map[int]string{}
 
@@ -61,6 +62,9 @@ func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 		activitiesMap[a.ID] = a.Name
 	}
 
+	// Total
+	grandTotal := map[int]map[int]int{}
+
 	fmt.Printf("%-10v %-8v %-8v %-8v %-8v %v\n", "Date", "Begin", "End", "Duration", "Project", "Activity")
 	for _, t := range timesheets {
 
@@ -71,5 +75,22 @@ func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 		activity, _ := activitiesMap[t.Activity]
 
 		fmt.Printf("%-10v %-8v %-8v %-8v %-8v %v\n", date, begin.Format(time.TimeOnly), end.Format(time.TimeOnly), end.Sub(begin), t.Project, fmt.Sprintf("%-4v %v", t.Activity, activity))
+
+		if grandTotal[t.Project] == nil {
+			grandTotal[t.Project] = map[int]int{}
+		}
+		grandTotal[t.Project][t.Activity] += t.Duration
+	}
+
+	fmt.Println()
+	fmt.Println("Time Summary")
+
+	fmt.Printf("%-8v %-10v %v\n", "Project", "Duration", "Activity")
+	for p, a := range grandTotal {
+		for act, dur := range a {
+			activity, _ := activitiesMap[act]
+			fmt.Printf("%-8v %-10v %v\n", p, time.Duration(dur)*time.Second, fmt.Sprintf("%-4v %v", act, activity))
+		}
+
 	}
 }
