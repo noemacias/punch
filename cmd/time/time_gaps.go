@@ -108,8 +108,17 @@ func (o *TimeReportCommand) Run(cmd *cobra.Command, args []string) {
 	for _, user := range users {
 		userTimeSheet, err := timesheet.List(begin, end, "1000", user, "", []string{})
 
+		userId, _ := strconv.Atoi(user)
+
+		userInfo := usersList.Get(userId)
+
 		if err != nil {
 			return
+		}
+
+		if len(userTimeSheet) == 0 {
+			fmt.Println("Missing Time Range:", begin, "-", end, "for user", userInfo.ID, userInfo.Alias, userInfo.Username)
+			continue
 		}
 
 		for _, u := range userTimeSheet {
