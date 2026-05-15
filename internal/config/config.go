@@ -8,8 +8,9 @@ import (
 )
 
 type Activity struct {
-	Id       int
-	Duration int64
+	Id        int
+	Duration  int64
+	ProjectId int `yaml:"project_id"`
 }
 
 type Settings struct {

@@ -24,6 +24,7 @@ func NewTimeListCommand() *cobra.Command {
 	}
 
 	cmd.Flags().StringP("user", "u", "", "User")
+	cmd.Flags().StringSlice("users", []string{}, "Users --users 37,90")
 	cmd.Flags().StringP("size", "s", "100", "The amount of entries for each page")
 	cmd.Flags().StringP("activity", "a", "", "Activity ID to filter timesheets")
 	cmd.Flags().String("begin", "", "Only records after this date will be included (format: HTML5 datetime-local, e.g. YYYY-MM-DDThh:mm:ss)")
@@ -34,6 +35,7 @@ func NewTimeListCommand() *cobra.Command {
 func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 
 	user, _ := cmd.Flags().GetString("user")
+	users, _ := cmd.Flags().GetStringSlice("users")
 	limit, _ := cmd.Flags().GetString("activity")
 	configFile, _ := cmd.Flags().GetString("config")
 	pageSize, _ := cmd.Flags().GetString("size")
@@ -43,7 +45,7 @@ func (o *TimeListCommand) Run(cmd *cobra.Command, args []string) {
 	settings := config.NewSettings(configFile)
 
 	timesheet := track.NewTimeSheet(settings)
-	timesheets, err := timesheet.List(begin, end, pageSize, user, limit)
+	timesheets, err := timesheet.List(begin, end, pageSize, user, limit, users)
 
 	if err != nil {
 		slog.Error("Failed to list timesheets", "error", err.Error())

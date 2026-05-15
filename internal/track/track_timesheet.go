@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/noemacias/punch/internal/config"
@@ -14,6 +15,7 @@ import (
 const (
 	Timelayout  = "2006-01-02T15:04:05-0700"
 	Timelayout2 = "2006-01-02T15:04"
+	Timelayout3 = "2006-01-02T15:04:05"
 )
 
 func WeekdaysBetween(beginStr, endStr string) ([]time.Time, error) {
@@ -78,17 +80,20 @@ func NewTimeSheet(settings *config.Settings) *TimeSheet {
 	}
 }
 
-func (t *TimeSheet) List(begin, end string, pageSize string, user string, activity string) (TimeSheetlist, error) {
-	params := map[string]string{
-		// "project": a.Settings.CustomerId,
-		"begin":    begin,
-		"end":      end,
-		"size":     pageSize,
-		"user":     user,
-		"activity": activity,
+func (t *TimeSheet) List(begin, end string, pageSize string, user string, activity string, users []string) (TimeSheetlist, error) {
+
+	params := url.Values{}
+	params.Set("begin", begin)
+	params.Set("end", end)
+	params.Set("size", pageSize)
+	params.Set("user", user)
+	params.Set("activity", activity)
+
+	for _, u := range users {
+		params.Add("users[]", u)
 	}
 
-	url, err := buildUrl(t.Settings.TrackingUrl, "/api/timesheets", params)
+	url, err := buildUrl2(t.Settings.TrackingUrl, "/api/timesheets", params)
 
 	if err != nil {
 		return nil, err

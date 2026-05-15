@@ -23,6 +23,17 @@ type User struct {
 
 type UserList []User
 
+func (u UserList) Get(id int) User {
+
+	for _, user := range u {
+		if user.ID == id {
+			return user
+		}
+	}
+
+	return User{}
+}
+
 type Users struct {
 	Settings *config.Settings
 }

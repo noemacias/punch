@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -63,9 +64,22 @@ func (o *TimeAddCommand) Run(cmd *cobra.Command, args []string) {
 
 			endtime := day.Add(time.Hour * time.Duration(a.Duration))
 
+			projectId := 0
+
+			if a.ProjectId == 0 {
+				projectId, _ = strconv.Atoi(settings.CustomerId)
+			} else {
+				projectId = a.ProjectId
+			}
+
+			if projectId == 0 {
+				slog.Debug("Activity missing parentid", "activity", a.Id)
+				continue
+			}
+
 			timeSheetList = append(timeSheetList, track.TimesheetEntry{
 				Activity: a.Id,
-				Project:  1,
+				Project:  projectId,
 				Begin:    day.Format(track.Timelayout2),
 				End:      endtime.Format(track.Timelayout2),
 			})
@@ -74,6 +88,10 @@ func (o *TimeAddCommand) Run(cmd *cobra.Command, args []string) {
 
 		}
 
+	}
+
+	if len(timeSheetList) == 0 {
+		return
 	}
 
 	activity := track.NewActitivies(settings)

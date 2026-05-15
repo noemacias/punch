@@ -7,7 +7,8 @@ import (
 func NewUsersGroup() *cobra.Command {
 
 	cmd := cobra.Command{
-		Use: `users`,
+		Use:   `user`,
+		Short: `Manage users`,
 	}
 
 	cmd.AddCommand(NewUserListCommand())

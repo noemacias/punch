@@ -55,6 +55,20 @@ func buildUrl(baseUrl, path string, params map[string]string) (*url.URL, error) 
 	return url, nil
 }
 
+func buildUrl2(baseUrl, path string, params url.Values) (*url.URL, error) {
+	url, err := url.Parse(baseUrl)
+
+	if err != nil {
+		return nil, err
+	}
+
+	url.Path = path
+
+	url.RawQuery = params.Encode()
+
+	return url, nil
+}
+
 func (a *Activities) List(limit, project string) ([]Activity, error) {
 
 	params := map[string]string{
