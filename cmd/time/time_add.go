@@ -80,8 +80,8 @@ func (o *TimeAddCommand) Run(cmd *cobra.Command, args []string) {
 			timeSheetList = append(timeSheetList, track.TimesheetEntry{
 				Activity: a.Id,
 				Project:  projectId,
-				Begin:    day.Format(track.Timelayout2),
-				End:      endtime.Format(track.Timelayout2),
+				Begin:    day.Format(track.TimeLayoutMinute),
+				End:      endtime.Format(track.TimeLayoutMinute),
 			})
 
 			day = day.Add(time.Hour * time.Duration(a.Duration))
@@ -109,7 +109,7 @@ func (o *TimeAddCommand) Run(cmd *cobra.Command, args []string) {
 
 	fmt.Printf("%-8v %-10v %-16v %-16v %v\n", "Project", "Weekday", "Begin", "End", "Activity")
 	for _, t := range timeSheetList {
-		day, _ := time.Parse(track.Timelayout2, t.Begin)
+		day, _ := time.Parse(track.TimeLayoutMinute, t.Begin)
 		activity, _ := activitiesMap[t.Activity]
 		fmt.Printf("%-8v %-10v %-16v %-16v %v\n", t.Project, day.Weekday(), t.Begin, t.End, fmt.Sprintf("%v - %v", t.Activity, activity))
 

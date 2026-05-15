@@ -48,27 +48,9 @@ func (o *TimeReportCommand) Run(cmd *cobra.Command, args []string) {
 		beginTime time.Time
 	)
 
-	// Check --last it set
+	// Check if --last is set, it takes precedence over --begin and --end
 	if inLastDays > 0 {
-
-		now := time.Now()
-		loc := now.Location()
-
-		beginTime = time.Date(
-			now.Year(), now.Month(), now.Day(),
-			0, 0, 0, 0,
-			loc,
-		).AddDate(0, 0, -(inLastDays - 1))
-
-		endTime = time.Date(
-			now.Year(), now.Month(), now.Day(),
-			23, 59, 59, int(time.Second-time.Nanosecond),
-			loc,
-		)
-
-		end = endTime.Format(track.Timelayout3)
-		begin = beginTime.Format(track.Timelayout3)
-
+		begin, end = track.LastNDaysRangeStr(inLastDays, track.TimeLayoutSecond)
 	}
 
 	if begin == "" || end == "" {
@@ -76,14 +58,14 @@ func (o *TimeReportCommand) Run(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	endTime, err := time.Parse(track.Timelayout3, end)
+	endTime, err := time.Parse(track.TimeLayoutSecond, end)
 
 	if err != nil {
 		slog.Error("Failed to parse --end", "error", err.Error())
 		return
 	}
 
-	beginTime, err = time.Parse(track.Timelayout3, begin)
+	beginTime, err = time.Parse(track.TimeLayoutSecond, begin)
 
 	if err != nil {
 		slog.Error("Failed to parse --begin", "error", err.Error())
@@ -136,7 +118,7 @@ func (o *TimeReportCommand) Run(cmd *cobra.Command, args []string) {
 				userDayMap[u.User] = map[string]track.TimesheetEntry{}
 			}
 
-			uBegin, _ := time.Parse(track.Timelayout, u.Begin)
+			uBegin, _ := time.Parse(track.TimeLayoutRFC3339TZ, u.Begin)
 			userDayMap[u.User][uBegin.Format(time.DateOnly)] = u
 
 			if userHourMap[u.User] == nil {

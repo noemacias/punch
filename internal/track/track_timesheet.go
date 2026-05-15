@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	Timelayout  = "2006-01-02T15:04:05-0700"
-	Timelayout2 = "2006-01-02T15:04"
-	Timelayout3 = "2006-01-02T15:04:05"
+	TimeLayoutRFC3339TZ = "2006-01-02T15:04:05-0700"
+	TimeLayoutMinute    = "2006-01-02T15:04"
+	TimeLayoutSecond    = "2006-01-02T15:04:05"
 )
 
 func WeekdaysBetween(beginStr, endStr string) ([]time.Time, error) {
@@ -64,7 +64,7 @@ type TimesheetEntry struct {
 
 func (t *TimesheetEntry) ParseTimeStamp(timestamp string) time.Time {
 
-	time, _ := time.Parse(Timelayout, timestamp)
+	time, _ := time.Parse(TimeLayoutRFC3339TZ, timestamp)
 	return time
 
 }
